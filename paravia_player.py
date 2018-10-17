@@ -3,21 +3,23 @@ from random import randint, random as randfloat
 from inspect import getmembers, isroutine
 import unittest
 
+
 class playerTesting(unittest.TestCase):
-    '''A Unit Test to exercise all of the functions in the class'''
+    """A Unit Test to exercise all of the functions in the class"""
+
     def setUp(self):
-        '''Create a new player for testing'''
+        """Create a new player for testing"""
         self.player = Player("Tom")
         return
 
     def tearDown(self):
-        '''Remove the player after testing'''
+        """Remove the player after testing"""
         self.player.SeizeAssets()
-        del(self.player)
+        del (self.player)
         return
 
     def testPlayer(self):
-        '''Perform a test'''
+        """Perform a test"""
         self.player.GenerateHarvest()
         self.player.NewLandAndGrainPrices()
         self.player.Cathedral = 100
@@ -49,30 +51,71 @@ class playerTesting(unittest.TestCase):
         self.assertTrue(self.player.CheckNewTitle())
         return
 
+
 class Player(object):
-    '''This class contains all of the data and functions necessary for a Santa Paravia player.'''
-    def __init__(self, name: str="Peppone", city: int=6, level: int=6, MorF: bool=True, year: int=1399):
-        '''Create a new player'''
-        self.CityList = ["Santa Paravia", "Fiumaccio", "Torricella", "Molinetto", "Fontanile", "Romanga", "Monterana"]
-        self.Male = ["Sir", "Baron", "Count", "Marquis", "Duke", "Grand Duke", "Prince", "* H.R.H. King"]
-        self.Female = ["Lady", "Baroness", "Countess", "Marquise", "Duchess", "Grand Duchess", "Princess", "* H.R.H. Queen"]
+    """This class contains all of the data and functions necessary for a Santa Paravia player."""
+
+    def __init__(
+        self,
+        name: str = "Peppone",
+        city: int = 6,
+        level: int = 6,
+        MorF: bool = True,
+        year: int = 1399,
+    ):
+        """Create a new player"""
+        self.CityList = [
+            "Santa Paravia",
+            "Fiumaccio",
+            "Torricella",
+            "Molinetto",
+            "Fontanile",
+            "Romanga",
+            "Monterana",
+        ]
+        self.Male = [
+            "Sir",
+            "Baron",
+            "Count",
+            "Marquis",
+            "Duke",
+            "Grand Duke",
+            "Prince",
+            "* H.R.H. King",
+        ]
+        self.Female = [
+            "Lady",
+            "Baroness",
+            "Countess",
+            "Marquise",
+            "Duchess",
+            "Grand Duchess",
+            "Princess",
+            "* H.R.H. Queen",
+        ]
         self.Levels = {6: "Apprentice", 7: "Journeyman", 8: "Master", 9: "Grand Master"}
-        self.HarvestDescription = {0: "Drought. Famine Threatens.",
-                                   1: "Bad Weather. Poor Harvest.",
-                                   2: "Normal Weather. Average Harvest.",
-                                   3: "Good Weather. Fine Harvest.",
-                                   4: "Excellent Weather. Great Harvest."}
-        self.JusticeDescription = {1: "Very Fair",
-                                   2: "Moderate",
-                                   3: "Harsh",
-                                   4: "Outrageous"}
+        self.HarvestDescription = {
+            0: "Drought. Famine Threatens.",
+            1: "Bad Weather. Poor Harvest.",
+            2: "Normal Weather. Average Harvest.",
+            3: "Good Weather. Fine Harvest.",
+            4: "Excellent Weather. Great Harvest.",
+        }
+        self.JusticeDescription = {
+            1: "Very Fair",
+            2: "Moderate",
+            3: "Harsh",
+            4: "Outrageous",
+        }
         self.Cathedral = 0
         self.City = self.CityList[city]
         self.Clergy = 5
         self.CustomsDuty = 25
         self.Difficulty = level + 5 if level < 6 else 0
-        if self.Difficulty < 6: self.Difficulty = 6
-        if self.Difficulty > 9: self.Difficulty = 9
+        if self.Difficulty < 6:
+            self.Difficulty = 6
+        if self.Difficulty > 9:
+            self.Difficulty = 9
         self.GrainPrice = 25
         self.GrainReserve = 5000
         self.GrainDemand = 0
@@ -126,18 +169,18 @@ class Player(object):
         return
 
     def toDict(self):
-        '''Return a sict of all internal variables'''
+        """Return a sict of all internal variables"""
         __myDict__ = dict()
         for __name, __obj in getmembers(self):
             # Variables that start with __ are "private" so shouldn't be displayed.
             # We don't want to display the names of the functions in the output.
             if not isroutine(__obj) and not __name.startswith("__"):
                 __myDict__[__name] = __obj
-        return(__myDict__)
+        return __myDict__
 
     def __repr__(self):
-        '''Return a string of our internal variables'''
-        return(str(self.toDict()))
+        """Return a string of our internal variables"""
+        return str(self.toDict())
 
     def __str__(self):
         """This routine will be called with a str(Class) call and will return
@@ -151,11 +194,16 @@ class Player(object):
         # Dicts can return data in any order, so we sort.
         for i in sorted(__myDict):
             __retval.append([i, __myDict[i]])
-        return(str(__retval))
+        return str(__retval)
 
     def AddRevenue(self):
         """Add money to the player's treasury and check for bankruptcy."""
-        self.Treasury += (self.JusticeRevenue + self.CustomsDutyRevenue + self.IncomeTaxRevenue + self.SalesTaxRevenue)
+        self.Treasury += (
+            self.JusticeRevenue
+            + self.CustomsDutyRevenue
+            + self.IncomeTaxRevenue
+            + self.SalesTaxRevenue
+        )
         if self.Treasury < 0:
             # Penalize deficit spending
             self.Treasury = int(float(self.Treasury) * 1.5)
@@ -165,7 +213,7 @@ class Player(object):
 
     def AttackNeighbor(self, other):
         """Attack a neighboring province and take some land."""
-        if self.WhichPlayer == 7: # This is the automated Baron account
+        if self.WhichPlayer == 7:  # This is the automated Baron account
             taken = randint(1000, 10000)
         else:
             taken = (self.Soldiers * 1000) - (self.Land / 3)
@@ -177,7 +225,7 @@ class Player(object):
         if deadsoldiers > (other.Soldiers - 15):
             deadsoldiers = other.Soldiers - 15
         other.Soldiers -= deadsoldiers
-        return((self.Title, self.Name, self.City, taken, deadsoldiers))
+        return (self.Title, self.Name, self.City, taken, deadsoldiers)
 
     def BuyCathedral(self):
         """Buys a Cathedral, adds clergy and public works and deducts the money"""
@@ -189,7 +237,7 @@ class Player(object):
 
     def BuyGrain(self, howMuch: float):
         """Buys grain and deducts the money"""
-        self.Treasury -= ((howMuch * self.GrainPrice) / 1000)
+        self.Treasury -= (howMuch * self.GrainPrice) / 1000
         self.GrainReserve += howMuch
         return
 
@@ -233,10 +281,12 @@ class Player(object):
         """Has the player eared a promotion (or a demotion?)"""
         if self.IsBankrupt is True:
             self.SeizeAssets()
+
         def limit10(num, denom):
             """A small function to limit the result to 10 or less"""
             val = round(float(num) / float(denom))
-            return(val if val < 11 else 10)
+            return val if val < 11 else 10
+
         Total = limit10(self.Marketplaces, 1)
         Total += limit10(self.Palace, 1)
         Total += limit10(self.Cathedral, 1)
@@ -250,59 +300,109 @@ class Player(object):
         Total += limit10(self.Serfs, 2000)
         Total += limit10(self.PublicWorks * 100.0, 500)
         title = (Total / self.Difficulty) - self.Justice
-        if title > 7: title = 7
-        if title < 0: title = 0
+        if title > 7:
+            title = 7
+        if title < 0:
+            title = 0
         self.OldTitle = self.Title
         if self.MaleOrFemale is True:
             self.Title = self.Male[title]
         else:
             self.Title = self.Female[title]
-        return(self.OldTitle != self.Title)
+        return self.OldTitle != self.Title
 
     def GenerateHarvest(self):
         """Generate the harvest for a new year."""
         self.Harvest = int((randint(0, 4) + randint(0, 5)) / 2)
         self.Rats = randint(0, 50)
-        self.GrainReserve = int(((self.GrainReserve * 100) - (self.GrainReserve * self.Rats)) / 100)
+        self.GrainReserve = int(
+            ((self.GrainReserve * 100) - (self.GrainReserve * self.Rats)) / 100
+        )
         return
 
     def GenerateIncome(self):
         """Determine the income from taxes and justice"""
         self.JusticeRevenue = ((self.Justice * 300) - 500) * self.TitleNum
-        y = 150.0 - float(self.SalesTax) - float(self.CustomsDuty) - float(self.IncomeTax)
-        if y < 1.0: y = 1.0
+        y = (
+            150.0
+            - float(self.SalesTax)
+            - float(self.CustomsDuty)
+            - float(self.IncomeTax)
+        )
+        if y < 1.0:
+            y = 1.0
         y = y / 100.0
-        self.CustomsDutyRevenue = ((self.Nobles * 180) + (self.Clergy * 75) + (self.Merchants * 20)) * y
+        self.CustomsDutyRevenue = (
+            (self.Nobles * 180) + (self.Clergy * 75) + (self.Merchants * 20)
+        ) * y
         self.CustomsDutyRevenue += int(self.PublicWorks * 100.0)
-        self.CustomsDutyRevenue = int(float(self.CustomsDuty) / 100.0 * float(self.CustomsDutyRevenue))
-        self.SalesTaxRevenue = ((self.Nobles * 50) + (self.Merchants * 25) + (int(self.PublicWorks) * 10))
-        self.SalesTaxRevenue *= int(y * (5.0 - float(self.Justice)) * float(self.SalesTax))
+        self.CustomsDutyRevenue = int(
+            float(self.CustomsDuty) / 100.0 * float(self.CustomsDutyRevenue)
+        )
+        self.SalesTaxRevenue = (
+            (self.Nobles * 50) + (self.Merchants * 25) + (int(self.PublicWorks) * 10)
+        )
+        self.SalesTaxRevenue *= int(
+            y * (5.0 - float(self.Justice)) * float(self.SalesTax)
+        )
         self.SalesTaxRevenue /= 200
-        self.IncomeTaxRevenue = int(((self.Nobles * 250) + int(self.PublicWorks * 20.0) + int(10.0 * float(self.Justice) * float(self.Nobles) * y)) * (self.IncomeTax / 100))
-        return((self.CustomsDutyRevenue, self.SalesTaxRevenue, self.IncomeTaxRevenue, self.JusticeRevenue))
+        self.IncomeTaxRevenue = int(
+            (
+                (self.Nobles * 250)
+                + int(self.PublicWorks * 20.0)
+                + int(10.0 * float(self.Justice) * float(self.Nobles) * y)
+            )
+            * (self.IncomeTax / 100)
+        )
+        return (
+            self.CustomsDutyRevenue,
+            self.SalesTaxRevenue,
+            self.IncomeTaxRevenue,
+            self.JusticeRevenue,
+        )
 
     def NewLandAndGrainPrices(self):
         """Determine the land and grain prices for the year."""
         x = float(self.Land)
-        y = (float(self.Serfs) - (float(self.Mills) * 100.0) * 5.0)
-        if y < 0.0: y = 0.0
-        if y < x: x = y
+        y = float(self.Serfs) - (float(self.Mills) * 100.0) * 5.0
+        if y < 0.0:
+            y = 0.0
+        if y < x:
+            x = y
         y = float(self.GrainReserve) * 2.0
-        if y < x: x = y
+        if y < x:
+            x = y
         y = float(self.Harvest - 0.5)
         h = int(x * y)
         self.GrainReserve += h
-        self.GrainDemand = (self.Nobles * 100) + (self.Cathedral * 40) + (self.Merchants * 30) + (self.Soldiers * 10) + (self.Serfs * 5)
-        self.LandPrice = (3.0 * float(self.Harvest) + float(randint(0, 5)) + float(randint(0, 5)) + 10.0) / 10.0
+        self.GrainDemand = (
+            (self.Nobles * 100)
+            + (self.Cathedral * 40)
+            + (self.Merchants * 30)
+            + (self.Soldiers * 10)
+            + (self.Serfs * 5)
+        )
+        self.LandPrice = (
+            3.0 * float(self.Harvest)
+            + float(randint(0, 5))
+            + float(randint(0, 5))
+            + 10.0
+        ) / 10.0
         if h < 1:
             y = 2.0
         else:
             y = float(self.GrainDemand) / float(h)
-            if y > 2.0: y = 2.0
-        if y < 0.8: y = 0.8
+            if y > 2.0:
+                y = 2.0
+        if y < 0.8:
+            y = 0.8
         self.LandPrice *= y
-        if self.LandPrice < 1.0: self.LandPrice = 1.0
-        self.GrainPrice = int((6.0 - float(self.Harvest)) * 3.0 + (float(randint(0, 4)) + float(randint(0, 4))) * 5.0 * y * 20.0)
+        if self.LandPrice < 1.0:
+            self.LandPrice = 1.0
+        self.GrainPrice = int(
+            (6.0 - float(self.Harvest)) * 3.0
+            + (float(randint(0, 4)) + float(randint(0, 4))) * 5.0 * y * 20.0
+        )
         self.RatsAte = h
         return
 
@@ -310,7 +410,9 @@ class Player(object):
         """Calculate the number of serfs that died over the pervious year"""
         absc = int(MyScale)
         sord = float(MyScale) - float(absc)
-        self.DeadSerfs = int((float(randint(0, absc)) + sord) * float(self.Serfs) / 100.0)
+        self.DeadSerfs = int(
+            (float(randint(0, absc)) + sord) * float(self.Serfs) / 100.0
+        )
         self.Serfs -= self.DeadSerfs
         return
 
@@ -318,15 +420,18 @@ class Player(object):
         """Calculate the number of serfs that were born over the previous year"""
         absc = int(MyScale)
         sord = float(MyScale) - float(absc)
-        self.NewSerfs = int((float(randint(0, absc)) + sord) * float(self.Serfs) / 100.0)
+        self.NewSerfs = int(
+            (float(randint(0, absc)) + sord) * float(self.Serfs) / 100.0
+        )
         self.Serfs += self.NewSerfs
         return
 
     def ReleaseGrain(self, howMuch: int):
         """Feed the serfs, check for starvation, harsh justice and invasions."""
         if howMuch > (self.GrainReserve * 0.8):
-            return(False)
-        if howMuch < 0: return(False)
+            return False
+        if howMuch < 0:
+            return False
         self.SoldierPay = 0
         self.MarketRevenue = 0
         self.NewSerfs = 0
@@ -336,18 +441,32 @@ class Player(object):
         self.InvadeMe = False
         self.GrainReserve -= howMuch
         z = float(howMuch) / float(self.GrainDemand) - 1.0
-        if z > 0.0: z /= 2.0
-        if z > 0.25: z = z / 10.0 + 0.25
-        zp = 50.0 - float(self.CustomsDuty) - float(self.SalesTax) - float(self.IncomeTax)
-        if zp < 0.0: zp *= float(self.Justice)
+        if z > 0.0:
+            z /= 2.0
+        if z > 0.25:
+            z = z / 10.0 + 0.25
+        zp = (
+            50.0
+            - float(self.CustomsDuty)
+            - float(self.SalesTax)
+            - float(self.IncomeTax)
+        )
+        if zp < 0.0:
+            zp *= float(self.Justice)
         zp /= 10.0
-        if zp > 0.0: zp += (3.0 - float(self.Justice))
+        if zp > 0.0:
+            zp += 3.0 - float(self.Justice)
         z += zp / 10.0
-        if z > 0.5: z = 0.5
+        if z > 0.5:
+            z = 0.5
         if howMuch < self.GrainDemand:
-            x = (float(self.GrainDemand) - float(howMuch)) / float(self.GrainDemand) * 100.0 - 9.0
-            if x > 65.0: x = 65.0
-            if x < 0.0: x = 0.0
+            x = (float(self.GrainDemand) - float(howMuch)) / float(
+                self.GrainDemand
+            ) * 100.0 - 9.0
+            if x > 65.0:
+                x = 65.0
+            if x < 0.0:
+                x = 0.0
             self.SerfsProcreating(3.0)
             self.SerfsDecomposing(x + 8.0)
         else:
@@ -360,13 +479,18 @@ class Player(object):
                 self.Clergy += randint(0, 3)
             if howMuch > int(float(self.GrainDemand) * 1.3):
                 zp = float(self.Serfs) / 1000.0
-                z = (float(howMuch) - float(self.GrainDemand)) / float(self.GrainDemand) * 10.0
-                z *= (zp * float(randint(0, 25)))
+                z = (
+                    (float(howMuch) - float(self.GrainDemand))
+                    / float(self.GrainDemand)
+                    * 10.0
+                )
+                z *= zp * float(randint(0, 25))
                 z += float(randint(0, 40))
                 self.TransplantedSerfs = int(z)
                 self.Serfs += self.TransplantedSerfs
                 z = z * randfloat()
-                if z > 50.0: z = 50.0
+                if z > 50.0:
+                    z = 50.0
                 self.Merchants += int(z)
                 self.Nobles += 1
                 self.Clergy += 2
@@ -385,7 +509,7 @@ class Player(object):
         self.Treasury -= self.SoldierPay
         if ((self.Land / 1000) > self.Soldiers) or ((self.Land / 500) > self.Soldiers):
             self.InvadeMe = True
-        return(True)
+        return True
 
     def SeizeAssets(self):
         """Oh no, we're bankrupt."""
@@ -402,15 +526,15 @@ class Player(object):
     def SellGrain(self, howMuch: int):
         """Sell off the amount of grain passed in."""
         if howMuch > self.GrainReserve or howMuch < 0:
-            return(False)
-        self.Treasury += (howMuch * self.GrainPrice / 1000)
+            return False
+        self.Treasury += howMuch * self.GrainPrice / 1000
         self.GrainReserve -= howMuch
-        return(True)
+        return True
 
     def SellLand(self, howMuch: int):
         """Sell off unwanted land"""
         if howMuch > self.Land or howMuch < 0:
-            return(False)
+            return False
         self.Land -= howMuch
         self.Treasury += int(float(howMuch) * self.LandPrice)
-        return(True)
+        return True

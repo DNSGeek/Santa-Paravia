@@ -4,8 +4,8 @@ import tkinter as tk
 from random import randint
 from paravia_player import Player
 
-class SantaParavia(tk.Frame):
 
+class SantaParavia(tk.Frame):  # pylint: disable=too-many-ancestors
     def __init__(self, master=None):
         self.players = []
         self.Peppone = Player("Peppone", 6)
@@ -14,14 +14,13 @@ class SantaParavia(tk.Frame):
         tk.Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
-        return
+
     def createWidgets(self):
         self.quitButton = tk.Button(self, text="Quit", command=self.quit)
         self.quitButton.grid()
-        return
 
-
-    def Instructions(self):
+    @staticmethod
+    def Instructions():
         msg = ["  You are the ruler of a 15th century Italian city-state."]
         msg.append("If you rule well, you will receive higher titles. The")
         msg.append("first player to become a king or queen wins. Life expectancy")
@@ -37,22 +36,26 @@ class SantaParavia(tk.Frame):
         msg.append("grain, some of your people will starve, and you will have")
         msg.append("a high death rate. High taxes raise money, but slow down")
         msg.append("economic growth.")
-        return(" ".join(msg))
+        return " ".join(msg)
 
     def Comparison(self, msg=""):
         for player in self.players:
             # Display comparison table
             # Player title/name, nobles, soldiers, clergy, merchants, serfs, land, treasury
             pass
-        return
 
-    def Obituary(self, player):
+    @staticmethod
+    def Obituary(player):
         player.IsDead = True
-        msg = "Very sad news.\n\n%s %s of %s has just died " % (player.Title, player.Name, player.City)
+        msg = "Very sad news.\n\n%s %s of %s has just died " % (
+            player.Title,
+            player.Name,
+            player.City,
+        )
         if player.Year > 1450:
             msg += "of old age after a long reign."
-            return(msg)
-        reason = randint(0,8)
+            return msg
+        reason = randint(0, 8)
         if reason < 4:
             msg += "of pneumonia after a cold winter in a drafty castle."
         elif reason == 5:
@@ -63,17 +66,19 @@ class SantaParavia(tk.Frame):
             msg += "after being attacked by robbers while traveling."
         else:
             msg += "of food poinoning."
-        return(msg)
+        return msg
 
-    def Born(self, player):
+    @staticmethod
+    def Born(player):
         serfs = int((randint(0, player.Marketplaces) * player.Serfs) / 100)
         player.Serfs += serfs
-        return(serfs)
+        return serfs
 
-    def Die(self, player):
+    @staticmethod
+    def Die(player):
         serfs = int((randint(0, player.Marketplaces) * player.Serfs) / 100)
         player.Serfs -= serfs
-        return(serfs)
+        return serfs
 
     def Invasion(self, player):
         for other in self.players:
@@ -87,10 +92,9 @@ class SantaParavia(tk.Frame):
                 # Don't attack if we can't take land.
                 continue
             if other.Soldiers > player.Soldiers:
-                return(other.AttackNeighbor(player))
+                return other.AttackNeighbor(player)
         # Nobody was strong enough to attack. Use Peppone
-        return(self.Peppone.AttackNeighbor(player))
-
+        return self.Peppone.AttackNeighbor(player)
 
     def ControlLoop(self):
         for player in self.players:
@@ -117,9 +121,9 @@ class SantaParavia(tk.Frame):
                 self.Comparison()
                 # Yay, I won!
                 break
-        return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app = SantaParavia()
-    app.master.title('Santa Paravia And Fiumaccio')
+    app.master.title("Santa Paravia And Fiumaccio")
     app.mainloop()
