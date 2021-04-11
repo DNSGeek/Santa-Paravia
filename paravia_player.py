@@ -170,7 +170,7 @@ class Player(object):
         self.RatsAte = 0
 
     def toDict(self):
-        """Return a sict of all internal variables"""
+        """Return a dict of all internal variables"""
         __myDict__ = dict()
         for __name, __obj in getmembers(self):
             # Variables that start with __ are "private" so shouldn't be displayed.
