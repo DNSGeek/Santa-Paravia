@@ -10,13 +10,11 @@ class playerTesting(unittest.TestCase):
     def setUp(self):
         """Create a new player for testing"""
         self.player = Player("Tom")
-        return
 
     def tearDown(self):
         """Remove the player after testing"""
         self.player.SeizeAssets()
-        del (self.player)
-        return
+        del self.player
 
     def testPlayer(self):
         """Perform a test"""
@@ -49,7 +47,6 @@ class playerTesting(unittest.TestCase):
         self.player.SellGrain(1000)
         self.player.SellLand(1000)
         self.assertTrue(self.player.CheckNewTitle())
-        return
 
 
 class Player(object):
@@ -93,7 +90,12 @@ class Player(object):
             "Princess",
             "* H.R.H. Queen",
         ]
-        self.Levels = {6: "Apprentice", 7: "Journeyman", 8: "Master", 9: "Grand Master"}
+        self.Levels = {
+            6: "Apprentice",
+            7: "Journeyman",
+            8: "Master",
+            9: "Grand Master",
+        }
         self.HarvestDescription = {
             0: "Drought. Famine Threatens.",
             1: "Bad Weather. Poor Harvest.",
@@ -166,7 +168,6 @@ class Player(object):
         self.Harvest = 0
         self.Rats = 0
         self.RatsAte = 0
-        return
 
     def toDict(self):
         """Return a sict of all internal variables"""
@@ -209,7 +210,6 @@ class Player(object):
             self.Treasury = int(float(self.Treasury) * 1.5)
         if self.Treasury < (-10000 * self.TitleNum):
             self.IsBankrupt = True
-        return
 
     def AttackNeighbor(self, other):
         """Attack a neighboring province and take some land."""
@@ -233,19 +233,16 @@ class Player(object):
         self.Clergy += randint(0, 5)
         self.Treasury -= 5000
         self.PublicWorks += 1.0
-        return
 
     def BuyGrain(self, howMuch: float):
         """Buys grain and deducts the money"""
         self.Treasury -= (howMuch * self.GrainPrice) / 1000
         self.GrainReserve += howMuch
-        return
 
     def BuyLand(self, howMuch: float):
         """Buys land and deducts the money"""
         self.Treasury -= int(float(howMuch) * self.LandPrice)
         self.Land += howMuch
-        return
 
     def BuyMarket(self):
         """Buys a merket, adds merchants and public works and deducts the money"""
@@ -253,14 +250,12 @@ class Player(object):
         self.Merchants += 5
         self.Treasury -= 1000
         self.PublicWorks += 1.0
-        return
 
     def BuyMill(self):
         """Buys a mill, adds public works and deducts the money."""
         self.Mills += 1
         self.Treasury -= 2000
         self.PublicWorks += 0.5
-        return
 
     def BuyPalace(self):
         """Constructs a palace portion, adds nobles and public works and deducts the money"""
@@ -268,14 +263,12 @@ class Player(object):
         self.Nobles += randint(0, 2)
         self.Treasury -= 3000
         self.PublicWorks += 0.5
-        return
 
     def BuySoldiers(self):
         """Buys soldiers, deducts serfs and money"""
         self.Soldiers += 20
         self.Serfs -= 20
         self.Treasury -= 500
-        return
 
     def CheckNewTitle(self):
         """Has the player eared a promotion (or a demotion?)"""
@@ -318,7 +311,6 @@ class Player(object):
         self.GrainReserve = int(
             ((self.GrainReserve * 100) - (self.GrainReserve * self.Rats)) / 100
         )
-        return
 
     def GenerateIncome(self):
         """Determine the income from taxes and justice"""
@@ -340,7 +332,9 @@ class Player(object):
             float(self.CustomsDuty) / 100.0 * float(self.CustomsDutyRevenue)
         )
         self.SalesTaxRevenue = (
-            (self.Nobles * 50) + (self.Merchants * 25) + (int(self.PublicWorks) * 10)
+            (self.Nobles * 50)
+            + (self.Merchants * 25)
+            + (int(self.PublicWorks) * 10)
         )
         self.SalesTaxRevenue *= int(
             y * (5.0 - float(self.Justice)) * float(self.SalesTax)
@@ -404,7 +398,6 @@ class Player(object):
             + (float(randint(0, 4)) + float(randint(0, 4))) * 5.0 * y * 20.0
         )
         self.RatsAte = h
-        return
 
     def SerfsDecomposing(self, MyScale: float):
         """Calculate the number of serfs that died over the pervious year"""
@@ -414,7 +407,6 @@ class Player(object):
             (float(randint(0, absc)) + sord) * float(self.Serfs) / 100.0
         )
         self.Serfs -= self.DeadSerfs
-        return
 
     def SerfsProcreating(self, MyScale: float):
         """Calculate the number of serfs that were born over the previous year"""
@@ -424,7 +416,6 @@ class Player(object):
             (float(randint(0, absc)) + sord) * float(self.Serfs) / 100.0
         )
         self.Serfs += self.NewSerfs
-        return
 
     def ReleaseGrain(self, howMuch: int):
         """Feed the serfs, check for starvation, harsh justice and invasions."""
@@ -495,7 +486,9 @@ class Player(object):
                 self.Nobles += 1
                 self.Clergy += 2
         if self.Justice > 2:
-            JusticeRevenue = self.Serfs / 100 * (self.Justice - 2) * (self.Justice - 2)
+            JusticeRevenue = (
+                self.Serfs / 100 * (self.Justice - 2) * (self.Justice - 2)
+            )
             self.JusticeRevenue = randint(0, JusticeRevenue)
             self.Serfs -= self.JusticeRevenue
             self.FleeingSerfs = self.JusticeRevenue
@@ -507,7 +500,9 @@ class Player(object):
             self.Treasury += self.MillRevenue
         self.SoldierPay = self.Soldiers * 3
         self.Treasury -= self.SoldierPay
-        if ((self.Land / 1000) > self.Soldiers) or ((self.Land / 500) > self.Soldiers):
+        if ((self.Land / 1000) > self.Soldiers) or (
+            (self.Land / 500) > self.Soldiers
+        ):
             self.InvadeMe = True
         return True
 
@@ -521,7 +516,6 @@ class Player(object):
         self.PublicWorks = 1.0
         self.Treasury = 100
         self.IsBankrupt = False
-        return
 
     def SellGrain(self, howMuch: int):
         """Sell off the amount of grain passed in."""
@@ -538,3 +532,7 @@ class Player(object):
         self.Land -= howMuch
         self.Treasury += int(float(howMuch) * self.LandPrice)
         return True
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=9, argv=["paravia_player.py"])
