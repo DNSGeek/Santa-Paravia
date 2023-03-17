@@ -1,38 +1,47 @@
 #!/usr/bin/env python3
 
-import tkinter as tk
+from os import getenv, sep
+from sys import stderr, version_info
+
+try:
+    from dearpygui import dearpygui
+except ImportError:
+    base = sep.join(getenv("__PYVENV_LAUNCHER__", "").split(sep)[:-1]) + sep
+    stderr.write("\ndearpygui module missing. Please install using\n")
+    stderr.write(f"sudo -H {base}pip{version_info.major}.{version_info.minor}")
+    stderr.write(" install dearpygui\n\n")
+    exit()
 from random import randint
+
 from paravia_player import Player
 
 
-class SantaParavia(tk.Frame):  # pylint: disable=too-many-ancestors
-    def __init__(self, master=None):
+class SantaParavia:  # pylint: disable=too-many-ancestors
+    def __init__(self):
         self.players = []
         self.Peppone = Player("Peppone", 6)
         self.name = "Santa Paravia And Fiumaccio"
-
-        tk.Frame.__init__(self, master)
-        self.grid()
-        self.createWidgets()
-
-    def createWidgets(self):
-        self.quitButton = tk.Button(self, text="Quit", command=self.quit)
-        self.quitButton.grid()
 
     @staticmethod
     def Instructions():
         msg = ["  You are the ruler of a 15th century Italian city-state."]
         msg.append("If you rule well, you will receive higher titles. The")
-        msg.append("first player to become a king or queen wins. Life expectancy")
+        msg.append(
+            "first player to become a king or queen wins. Life expectancy"
+        )
         msg.append("then was brief, so you may not live long enough to win.")
         msg.append("  The computer will draw a map of your state. The size")
         msg.append("of the area in the wall grows as you buy more land. The")
         msg.append("size of the guard tower in the upper left corner shows")
         msg.append("the adequacy of your defenses. If it shrinks, equip more")
-        msg.append("soldiers! If the horse and plowman is touching the top wall,")
+        msg.append(
+            "soldiers! If the horse and plowman is touching the top wall,"
+        )
         msg.append("all your land is in production. Otherwise you need more")
         msg.append("serfs, who will migrate to your state if you distribute")
-        msg.append("more grain than the minimum demand. If you distribute less")
+        msg.append(
+            "more grain than the minimum demand. If you distribute less"
+        )
         msg.append("grain, some of your people will starve, and you will have")
         msg.append("a high death rate. High taxes raise money, but slow down")
         msg.append("economic growth.")
@@ -103,6 +112,7 @@ class SantaParavia(tk.Frame):  # pylint: disable=too-many-ancestors
             player.NewLandAndGrainPrices()
             player.GenerateIncome()
             # Buy and Sell grain and land
+            howMuch: int = 1999
             player.ReleaseGrain(howMuch)
             if player.InvadeMe:
                 self.Invasion(player)
@@ -124,6 +134,19 @@ class SantaParavia(tk.Frame):  # pylint: disable=too-many-ancestors
 
 
 if __name__ == "__main__":
-    app = SantaParavia()
-    app.master.title("Santa Paravia And Fiumaccio")
-    app.mainloop()
+    version = dearpygui.get_dearpygui_version().split(".")
+    if "b" in version[-1]:
+        point = version[-1].split("b")[0]
+        beta = version[-1].split("b")[1]
+        version[-1] = point
+        version.append(beta)
+    version = [int(i) for i in version]
+    print(f"Running dearpygui version {dearpygui.get_dearpygui_version()}")
+    vlen = len(version) - 1
+    tot = 0
+    for i in version:
+        tot += i * (10**vlen)
+        vlen -= 1
+    if tot < 112:
+        stderr.write("\ndearpygui version too old.\n")
+        exit()

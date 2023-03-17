@@ -1,52 +1,8 @@
 """This module defines a Santa Paravia player in Python 3"""
-from random import randint, random as randfloat
-from inspect import getmembers, isroutine
 import unittest
-
-
-class playerTesting(unittest.TestCase):
-    """A Unit Test to exercise all of the functions in the class"""
-
-    def setUp(self):
-        """Create a new player for testing"""
-        self.player = Player("Tom")
-
-    def tearDown(self):
-        """Remove the player after testing"""
-        self.player.SeizeAssets()
-        del self.player
-
-    def testPlayer(self):
-        """Perform a test"""
-        self.player.GenerateHarvest()
-        self.player.NewLandAndGrainPrices()
-        self.player.Cathedral = 100
-        self.player.Mills = 100
-        self.player.Marketplaces = 100
-        self.player.Palace = 10
-        self.player.Serfs = 100000
-        self.player.Soldiers = 1000
-        self.player.PublicWorks = 10.0
-        self.player.Justice = 1
-        self.player.GrainReserve = 200000
-        self.player.Land = 10000
-        self.player.Treasury = 1000000
-        self.player.GenerateIncome()
-        self.player.AddRevenue()
-        self.player.BuyCathedral()
-        self.player.BuyMarket()
-        self.player.BuyMill()
-        self.player.BuyPalace()
-        self.player.BuySoldiers()
-        self.player.BuyLand(1000)
-        self.player.BuyGrain(10000)
-        self.player.AddRevenue()
-        other = Player("Tim", 1)
-        self.player.AttackNeighbor(other)
-        self.player.ReleaseGrain(100000)
-        self.player.SellGrain(1000)
-        self.player.SellLand(1000)
-        self.assertTrue(self.player.CheckNewTitle())
+from inspect import getmembers, isroutine
+from random import randint
+from random import random as randfloat
 
 
 class Player(object):
@@ -179,24 +135,6 @@ class Player(object):
                 __myDict__[__name] = __obj
         return __myDict__
 
-    def __repr__(self):
-        """Return a string of our internal variables"""
-        return str(self.toDict())
-
-    def __str__(self):
-        """This routine will be called with a str(Class) call and will return
-        an str representation of all the variables defined within the class.
-        The data is returned as a list of lists. The first element is the
-        variable name, the second is the value. The variables are alphabetized.
-        [['varname', 'value'], ['varname2', 'value2'] [...]]"""
-        __myDict = self.toDict()
-        __retval = []
-        # Why are we sorting? So the results are always returned in the same order.
-        # Dicts can return data in any order, so we sort.
-        for i in sorted(__myDict):
-            __retval.append([i, __myDict[i]])
-        return str(__retval)
-
     def AddRevenue(self):
         """Add money to the player's treasury and check for bankruptcy."""
         self.Treasury += (
@@ -234,12 +172,12 @@ class Player(object):
         self.Treasury -= 5000
         self.PublicWorks += 1.0
 
-    def BuyGrain(self, howMuch: float):
+    def BuyGrain(self, howMuch: int):
         """Buys grain and deducts the money"""
-        self.Treasury -= (howMuch * self.GrainPrice) / 1000
+        self.Treasury -= (howMuch * self.GrainPrice) // 1000
         self.GrainReserve += howMuch
 
-    def BuyLand(self, howMuch: float):
+    def BuyLand(self, howMuch: int):
         """Buys land and deducts the money"""
         self.Treasury -= int(float(howMuch) * self.LandPrice)
         self.Land += howMuch
@@ -489,7 +427,7 @@ class Player(object):
             JusticeRevenue = (
                 self.Serfs / 100 * (self.Justice - 2) * (self.Justice - 2)
             )
-            self.JusticeRevenue = randint(0, JusticeRevenue)
+            self.JusticeRevenue = randint(0, int(JusticeRevenue))
             self.Serfs -= self.JusticeRevenue
             self.FleeingSerfs = self.JusticeRevenue
         self.MarketRevenue = self.Marketplaces * 75
@@ -521,7 +459,7 @@ class Player(object):
         """Sell off the amount of grain passed in."""
         if howMuch > self.GrainReserve or howMuch < 0:
             return False
-        self.Treasury += howMuch * self.GrainPrice / 1000
+        self.Treasury += howMuch * self.GrainPrice // 1000
         self.GrainReserve -= howMuch
         return True
 
@@ -532,6 +470,69 @@ class Player(object):
         self.Land -= howMuch
         self.Treasury += int(float(howMuch) * self.LandPrice)
         return True
+
+    def __repr__(self):
+        """Return a string of our internal variables"""
+        return str(self.toDict())
+
+    def __str__(self):
+        """This routine will be called with a str(Class) call and will return
+        an str representation of all the variables defined within the class.
+        The data is returned as a list of lists. The first element is the
+        variable name, the second is the value. The variables are alphabetized.
+        [['varname', 'value'], ['varname2', 'value2'] [...]]"""
+        __myDict = self.toDict()
+        __retval = []
+        # Why are we sorting? So the results are always returned in the same order.
+        # Dicts can return data in any order, so we sort.
+        for i in sorted(__myDict):
+            __retval.append([i, __myDict[i]])
+        return str(__retval)
+
+
+class playerTesting(unittest.TestCase):
+    """A Unit Test to exercise all of the functions in the class"""
+
+    def setUp(self):
+        """Create a new player for testing"""
+        self.player = Player("Tom")
+
+    def tearDown(self):
+        """Remove the player after testing"""
+        self.player.SeizeAssets()
+        del self.player
+
+    def testPlayer(self):
+        """Perform a test"""
+        self.player.GenerateHarvest()
+        self.player.NewLandAndGrainPrices()
+        self.player.Cathedral = 100
+        self.player.Mills = 100
+        self.player.Marketplaces = 100
+        self.player.Palace = 10
+        self.player.Serfs = 100000
+        self.player.Soldiers = 1000
+        self.player.PublicWorks = 10.0
+        self.player.Justice = 1
+        self.player.GrainReserve = 200000
+        self.player.Land = 10000
+        self.player.Treasury = 1000000
+        self.player.GenerateIncome()
+        self.player.AddRevenue()
+        self.player.BuyCathedral()
+        self.player.BuyMarket()
+        self.player.BuyMill()
+        self.player.BuyPalace()
+        self.player.BuySoldiers()
+        self.player.BuyLand(1000)
+        self.player.BuyGrain(10000)
+        self.player.AddRevenue()
+        other = Player("Tim", 1)
+        self.player.AttackNeighbor(other)
+        self.player.ReleaseGrain(100000)
+        self.player.SellGrain(1000)
+        self.player.SellLand(1000)
+        self.assertTrue(self.player.CheckNewTitle())
 
 
 if __name__ == "__main__":
